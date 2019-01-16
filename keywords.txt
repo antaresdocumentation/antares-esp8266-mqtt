@@ -1,0 +1,30 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Classes (KEYWORD1)
+#######################################
+
+AntaresESP8266MQTT	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+wifiConnection	KEYWORD2
+setDebug	KEYWORD2
+printDebug	KEYWORD2
+ipToString	KEYWORD2
+setMqttserver	KEYWORD2
+checkMqttConnection	KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+#######################################
+ACCESSKEY	LITERAL1
+WIFISSID	LITERAL1
+PASSWORD	LITERAL1
+
+projectName	LITERAL1
+deviceName	LITERAL1
