@@ -4,8 +4,8 @@
 #define WIFISSID "your-wifi-ssid"
 #define PASSWORD "your-wifi-password"
 
-#define projectName = "your-project-name";
-#define deviceName = "your-device-name";
+#define projectName "your-project-name"
+#define deviceName "your-device-name"
 
 AntaresESP8266MQTT antares(ACCESSKEY);
 
@@ -22,6 +22,7 @@ void loop() {
   antares.add("humidity", 75);
   antares.add("message", "Hello World!");
   antares.add("temperature", 45);
+  antares.printData();
   antares.publish(projectName, deviceName);
   delay(5000);
 }

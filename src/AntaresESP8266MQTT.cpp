@@ -125,15 +125,40 @@ void AntaresESP8266MQTT::printDebug(String text) {
 
 void AntaresESP8266MQTT::publish(String projectName, String deviceName) {
     String topic = "/oneM2M/req/" + _accessKey + "/antares-cse/json";
-    char jsonDataChar[_jsonDataString.length() + 1];
+    String finalData;
+
+    _jsonDataString.replace("\"", "\\\"");
+    Serial.println(_jsonDataString);
+
+    finalData += "{";
+    finalData += "\"m2m:rqp\": {";
+    finalData += "\"fr\": \"" + _accessKey +"\",";
+    finalData += "\"to\": \"/antares-cse/antares-id/" + projectName + "/" + deviceName + "\",";
+    finalData += "\"op\": 1,";
+    finalData += "\"rqi\": 123456,";
+    finalData += "\"pc\": {";
+    finalData += "\"m2m:cin\": {";
+    finalData += "\"cnf\": \"message\",";
+    finalData += "\"con\": \""+ _jsonDataString + "\"";
+    finalData += "}";
+    finalData += "},";
+    finalData += "\"ty\": 4";
+    finalData += "}";
+    finalData += "}";
+
+    // DynamicJsonBuffer jsonBuffer;
+    // JsonObject& object = jsonBuffer.parseObject(finalData);
+    // object.prettyPrintTo(Serial);
+
+    char finalDataChar[finalData.length() + 1];
     char topicChar[topic.length() + 1];
 
-    _jsonDataString.toCharArray(jsonDataChar, _jsonDataString.length() + 1);
+    finalData.toCharArray(finalDataChar, finalData.length() + 1);
     topic.toCharArray(topicChar, topic.length() + 1);
 
     _jsonDataString = "{}";
 
-    client.publish(topicChar, jsonDataChar);
+    client.publish(topicChar, finalDataChar);
 }
 
 void AntaresESP8266MQTT::setCallback(std::function<void(char*, uint8_t*, unsigned int)> callbackFunc) {
