@@ -16,7 +16,7 @@ wifiConnection	KEYWORD2
 setDebug	KEYWORD2
 printDebug	KEYWORD2
 ipToString	KEYWORD2
-setMqttserver	KEYWORD2
+setMqttServer	KEYWORD2
 checkMqttConnection	KEYWORD2
 
 ######################################

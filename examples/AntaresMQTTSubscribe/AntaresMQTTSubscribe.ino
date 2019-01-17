@@ -9,19 +9,22 @@
 
 AntaresESP8266MQTT antares(ACCESSKEY);
 
+void callback(char topic[], byte payload[], unsigned int length) {
+  String topicString = String(topic);
+  String payloadString = antares.byteToString(payload, length);
+  
+  Serial.println("[ANTARES] New Mesage: ");
+  Serial.println(topicString);
+  Serial.println(payloadString);
+}
+
 void setup() {
   Serial.begin(115200);
   antares.setDebug(true);
   antares.wifiConnection(WIFISSID, PASSWORD);
   antares.setMqttServer();
+  antares.setCallback(callback);
 }
 void loop() {
   antares.checkMqttConnection();
-
-  antares.add("temperature", 30);
-  antares.add("humidity", 75);
-  antares.add("message", "Hello World!");
-  antares.add("temperature", 45);
-  antares.publish(projectName, deviceName);
-  delay(5000);
 }

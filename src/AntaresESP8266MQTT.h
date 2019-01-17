@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 class AntaresESP8266MQTT {
 
@@ -15,6 +16,8 @@ private:
     char* _wifiSSID;
     char* _wifiPass;
     String _accessKey;
+    String _jsonDataString = "{}";
+    String _subscriptionTopic;
 
 public:
     AntaresESP8266MQTT(String accessKey);
@@ -22,9 +25,20 @@ public:
     bool setDebug(bool trueFalse);
     void printDebug(String text);
     String ipToString(IPAddress ip);
+    /* Overloaded functions: Add data to temporary storage */
+    void add(String key, int value);
+    void add(String key, float value);
+    void add(String key, double value);
+    void add(String key, String value);
+    /* Overloaded functions end */
+    void printData();
+    void publish(String projectName, String deviceName);
 
     void setMqttServer();
     void checkMqttConnection();
+    void setCallback(std::function<void(char*, uint8_t*, unsigned int)> callbackFunc);
+    String byteToString(byte* payload, unsigned int length);
+    void setSubscriptionTopic();
 };
 
 #endif

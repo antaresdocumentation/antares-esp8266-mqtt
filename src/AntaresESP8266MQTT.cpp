@@ -19,12 +19,22 @@ void AntaresESP8266MQTT::setMqttServer() {
 }
 
 void AntaresESP8266MQTT::checkMqttConnection() {
+    _subscriptionTopic = "/oneM2M/req/" + _accessKey + "/antares-cse/json";
+
     if(!client.connected()) {
         while(!client.connected()) {
             printDebug("[ANTARES] Attempting MQTT connection...\n");
             if(client.connect("ESP8266-TESTVALIAN")) {
                 printDebug("[ANTARES] Connected!");
-                client.publish("testvalian", "connect!");
+                char subscriptionTopicChar[_subscriptionTopic.length() + 1];
+                _subscriptionTopic.toCharArray(subscriptionTopicChar, _subscriptionTopic.length() + 1);
+
+                Serial.println();
+                Serial.print("[ANTARES] Topic: ");
+                Serial.println(subscriptionTopicChar);
+
+                client.publish(subscriptionTopicChar, "connect!");
+                client.subscribe(subscriptionTopicChar);
             }
             else {
                 printDebug("[ANTARES] Failed, rc=" + String(client.state()) + ", Will try again in 5 secs.\n");
@@ -67,7 +77,45 @@ bool AntaresESP8266MQTT::wifiConnection(String SSID, String wifiPassword) {
     }
 }
 
+void AntaresESP8266MQTT::add(String key, int value) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonDataString);
+    object[key] = value;
+    String newInsert;
+    object.printTo(newInsert);
+    _jsonDataString = newInsert;
+}
 
+void AntaresESP8266MQTT::add(String key, float value) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonDataString);
+    object[key] = value;
+    String newInsert;
+    object.printTo(newInsert);
+    _jsonDataString = newInsert;
+}
+
+void AntaresESP8266MQTT::add(String key, double value) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonDataString);
+    object[key] = value;
+    String newInsert;
+    object.printTo(newInsert);
+    _jsonDataString = newInsert;
+}
+
+void AntaresESP8266MQTT::add(String key, String value) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonDataString);
+    object[key] = value;
+    String newInsert;
+    object.printTo(newInsert);
+    _jsonDataString = newInsert;
+}
+
+void AntaresESP8266MQTT::printData() {
+    printDebug("[ANTARES] " + _jsonDataString + "\n");
+}
 
 void AntaresESP8266MQTT::printDebug(String text) {
     if(_debug) {
@@ -75,8 +123,33 @@ void AntaresESP8266MQTT::printDebug(String text) {
     }
 }
 
+void AntaresESP8266MQTT::publish(String projectName, String deviceName) {
+    String topic = "/oneM2M/req/" + _accessKey + "/antares-cse/json";
+    char jsonDataChar[_jsonDataString.length() + 1];
+    char topicChar[topic.length() + 1];
+
+    _jsonDataString.toCharArray(jsonDataChar, _jsonDataString.length() + 1);
+    topic.toCharArray(topicChar, topic.length() + 1);
+
+    _jsonDataString = "{}";
+
+    client.publish(topicChar, jsonDataChar);
+}
+
+void AntaresESP8266MQTT::setCallback(std::function<void(char*, uint8_t*, unsigned int)> callbackFunc) {
+    client.setCallback(callbackFunc);
+}
+
 bool AntaresESP8266MQTT::setDebug(bool trueFalse) {
     _debug = trueFalse;
+}
+
+String AntaresESP8266MQTT::byteToString(byte* payload, unsigned int length) {
+    String payloadString;
+    for(int i = 0; i < length; i++) {
+        payloadString += char(payload[i]);
+    }
+    return payloadString;
 }
 
 String AntaresESP8266MQTT::ipToString(IPAddress ip) {
@@ -84,4 +157,8 @@ String AntaresESP8266MQTT::ipToString(IPAddress ip) {
     for (int i=0; i<4; i++)
       s += i  ? "." + String(ip[i]) : String(ip[i]);
     return s;
+}
+
+void AntaresESP8266MQTT::setSubscriptionTopic() {
+    _subscriptionTopic = "/oneM2M/req/" + _accessKey + "/antares-cse/json";
 }
