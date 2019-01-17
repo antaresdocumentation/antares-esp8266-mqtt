@@ -18,6 +18,7 @@ printDebug	KEYWORD2
 ipToString	KEYWORD2
 setMqttServer	KEYWORD2
 checkMqttConnection	KEYWORD2
+printdata	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)
