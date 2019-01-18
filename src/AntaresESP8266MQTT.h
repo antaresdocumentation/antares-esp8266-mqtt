@@ -17,7 +17,9 @@ private:
     char* _wifiPass;
     String _accessKey;
     String _jsonDataString = "{}";
+    String _jsonSubDataString;
     String _subscriptionTopic;
+    String _receivedTopic;
 
 public:
     AntaresESP8266MQTT(String accessKey);
@@ -33,11 +35,20 @@ public:
     /* Overloaded functions end */
     void printData();
     void publish(String projectName, String deviceName);
+    /* Get subscription callback data*/
+    int getInt(String key);
+    float getFloat(String key);
+    double getDouble(String key);
+    String getString(String key);
+    /* Get data end */
+
+    String getTopic();
+    String getPayload();
 
     void setMqttServer();
     void checkMqttConnection();
     void setCallback(std::function<void(char*, uint8_t*, unsigned int)> callbackFunc);
-    String byteToString(byte* payload, unsigned int length);
+    String get(char* topic, byte* payload, unsigned int length);
     void setSubscriptionTopic();
 };
 

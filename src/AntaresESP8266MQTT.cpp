@@ -127,8 +127,16 @@ void AntaresESP8266MQTT::publish(String projectName, String deviceName) {
     String topic = "/oneM2M/req/" + _accessKey + "/antares-cse/json";
     String finalData;
 
+    if(_debug) {
+        DynamicJsonBuffer jsonBuffer;
+        JsonObject& object = jsonBuffer.parseObject(_jsonDataString);
+        printDebug("[ANTARES] PUBLISH DATA:\n\n");
+        object.prettyPrintTo(Serial);
+        Serial.println("\n");
+    }
+
     _jsonDataString.replace("\"", "\\\"");
-    Serial.println(_jsonDataString);
+
 
     finalData += "{";
     finalData += "\"m2m:rqp\": {";
@@ -161,6 +169,30 @@ void AntaresESP8266MQTT::publish(String projectName, String deviceName) {
     client.publish(topicChar, finalDataChar);
 }
 
+int AntaresESP8266MQTT::getInt(String key) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonSubDataString);
+    return object[key];
+}
+
+float AntaresESP8266MQTT::getFloat(String key) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonSubDataString);
+    return object[key];
+}
+
+double AntaresESP8266MQTT::getDouble(String key) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonSubDataString);
+    return object[key];
+}
+
+String AntaresESP8266MQTT::getString(String key) {
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(_jsonSubDataString);
+    return object[key];
+}
+
 void AntaresESP8266MQTT::setCallback(std::function<void(char*, uint8_t*, unsigned int)> callbackFunc) {
     client.setCallback(callbackFunc);
 }
@@ -169,12 +201,28 @@ bool AntaresESP8266MQTT::setDebug(bool trueFalse) {
     _debug = trueFalse;
 }
 
-String AntaresESP8266MQTT::byteToString(byte* payload, unsigned int length) {
+String AntaresESP8266MQTT::get(char* topic, byte* payload, unsigned int length) {
+    _receivedTopic = String(topic);
+
     String payloadString;
     for(int i = 0; i < length; i++) {
         payloadString += char(payload[i]);
     }
-    return payloadString;
+
+    DynamicJsonBuffer jsonBuffer;
+    JsonObject& object = jsonBuffer.parseObject(payloadString);
+    String parsedString = object["m2m:rqp"]["pc"]["m2m:cin"]["con"];
+    _jsonSubDataString = parsedString;
+
+    return _jsonSubDataString;
+}
+
+String AntaresESP8266MQTT::getTopic() {
+    return _receivedTopic;
+}
+
+String AntaresESP8266MQTT::getPayload() {
+    return _jsonSubDataString;
 }
 
 String AntaresESP8266MQTT::ipToString(IPAddress ip) {
