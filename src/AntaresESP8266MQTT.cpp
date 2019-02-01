@@ -24,8 +24,16 @@ void AntaresESP8266MQTT::checkMqttConnection() {
     if(!client.connected()) {
         while(!client.connected()) {
             printDebug("[ANTARES] Attempting MQTT connection...\n");
-            if(client.connect("ESP8266-TESTVALIAN")) {
-                printDebug("[ANTARES] Connected!");
+
+            String clientId = "ESP8266-" + _accessKey;
+
+            char clientIdChar[clientId.length() + 1];
+            clientId.toCharArray(clientIdChar, clientId.length() + 1);
+
+            if(client.connect(clientIdChar)) {
+                printDebug("[ANTARES] Connected! Client ID:");
+                printDebug(clientIdChar);
+                printDebug("\n");
                 char subscriptionTopicChar[_subscriptionTopic.length() + 1];
                 _subscriptionTopic.toCharArray(subscriptionTopicChar, _subscriptionTopic.length() + 1);
 
