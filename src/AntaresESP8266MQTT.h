@@ -9,7 +9,7 @@
 class AntaresESP8266MQTT {
 
 private:
-    const char* _mqttServer = "platform.antares.id";
+    const char* _mqttServer = "mqtt.antares.id";
     const int _mqttPort = 1883;
     const int _secureMqttPort = 8883;
     bool _debug;
